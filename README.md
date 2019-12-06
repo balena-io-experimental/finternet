@@ -38,14 +38,37 @@ The following outputs can be used to share internet:
 
 ## NOTES:
 hotspot always on
-connect to network and captive portal
-simple express server for config
-add data, press reconfigure, handles connection
 
-multi in
-	with route metrics
+connect to network and captive portal (only if no wifi connection at all?)
 
 finternet.local (kind of like BoB)
-status page
-	output config
-	input config (modem APN, input wifi, input ethernet [static IP])
+
+simple express server for config (with link states)
+
+1. output config
+
+	wifi:
+
+		SSID
+
+		PSK
+
+1. input config
+
+	wifi (handled by wifi-connect?):
+
+		SSID
+
+		PSK
+
+	gsm:
+
+		APN
+
+	ethernet:
+
+		static IP
+
+add data, press reconfigure, handles connection
+
+multiple inputs handled with routing metrics for fallback

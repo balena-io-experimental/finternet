@@ -1,0 +1,11 @@
+FROM balenalib/%%BALENA_ARCH%%-debian:buster
+
+RUN install_packages util-linux procps hostapd \
+	iproute2 iw haveged dnsmasq iptables git make
+
+RUN git clone https://github.com/oblique/create_ap && \
+	cd create_ap && \
+	make install
+
+
+CMD while true; do echo 'Hello'; sleep 10; done

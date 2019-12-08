@@ -1,0 +1,52 @@
+{
+  "name": "finternet",
+  "version": "0.0.1",
+  "description": "An indestructible box of internet, based on the balena Fin",
+  "main": "build/index.js",
+  "scripts": {
+    "check": "tsc --pretty --noEmit --diagnostics --project ./tsconfig.json",
+    "check:dev": "tsc --pretty --noEmit --diagnostics --project ./tsconfig.dev.json",
+    "lint": "resin-lint --typescript src tests",
+    "lint:fix": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"{src,test,typings}/**/*.ts\"",
+    "test": "npm run build && mocha -r ts-node/register \"tests/**/*.spec.ts\"",
+    "build": "tsc --project . && copyfiles -e 'src/**/*.ts' 'src/**/*' \"$(jq -r .compilerOptions.outDir <tsconfig.json)\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run lint"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --config ./node_modules/resin-lint/config/.prettierrc --write",
+      "resin-lint --typescript",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balena-io-playground/finternet.git"
+  },
+  "author": "Matthew McGinn <matthew@balena.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/balena-io-playground/finternet/issues"
+  },
+  "homepage": "https://github.com/balena-io-playground/finternet#readme",
+  "dependencies": {
+    "@balena/node-metrics-gatherer": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "child_process": "^1.0.2",
+    "dbus-native": "^0.4.0",
+    "express": "^4.17.1",
+    "typescript": "^3.7.3"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.1.1",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1",
+    "resin-lint": "^3.1.1"
+  }
+}

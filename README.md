@@ -34,14 +34,14 @@ The following outputs can be used to share internet:
 1. Ethernet output
 1. Bluetooth output
 1. USB output
-1. NTP over LAN
+1. Serving NTP on the LAN
 
 ## NOTES:
-hotspot always on
+hotspot always on (on the slower interface of all available wireless interfaces)
 
 connect to network and captive portal (only if no wifi connection at all?)
 
-finternet.local (kind of like BoB)
+finternet.local (perhaps reusing [balena-mdns-publisher](https://github.com/balena-io/balena-mdns-publisher))
 
 simple express server for config (with link states)
 
@@ -55,7 +55,7 @@ simple express server for config (with link states)
 
 1. input config
 
-	wifi (handled by wifi-connect?):
+	wifi:
 
 		SSID
 

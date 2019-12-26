@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
 
-import { createHotspot } from './hotspot';
+import { configureStatic, createHotspot } from './nm';
 
 import { publishLocal } from './avahi';
 
@@ -44,6 +44,20 @@ app.post('/configure-hotspot', (_req, res) => {
 		name: _req.body['SSID'],
 		password: _req.body['password'],
 		iface: DEFAULT_IFACE,
+	});
+
+	res.redirect('/');
+});
+
+app.post('/configure-ethernet', (_req, res) => {
+	console.log(_req.body);
+
+	configureStatic({
+		address: _req.body['address'],
+		netmask: _req.body['netmask'],
+		gateway: _req.body['gateway'],
+		dnsServers: _req.body['dnsServers'],
+		dnsSearch: _req.body['dnsSearch'],
 	});
 
 	res.redirect('/');

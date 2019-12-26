@@ -10,3 +10,13 @@
 	<br />
 	<input type="submit" value="Reconfigure hotspot" />
 </form>
+<h2>Ethernet static configuration</h2>
+<form method="post" action="/configure-ethernet">
+	IP Address: <input type="text" name="address" /><br />
+	Netmask: <input type="number" name="netmask" /><br />
+	Gateway: <input type="text" name="gateway" /><br />
+	DNS Servers (comma-separated): <input type="text" name="dnsServers" /><br />
+	DNS Search Domain: <input type="text" name="dnsSearch" /><br />
+	<br />
+	<input type="submit" value="Configure static IP" />
+</form>

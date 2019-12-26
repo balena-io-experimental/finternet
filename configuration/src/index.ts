@@ -1,12 +1,21 @@
 import { metrics } from '@balena/node-metrics-gatherer';
 import * as bodyParser from 'body-parser';
-import { spawn } from 'child_process';
 import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
 
+import { createHotspot } from './hotspot';
+
+import { publishLocal } from './avahi';
+
 const app = express();
-const LISTEN_PORT = 8080;
+
+// defaults
+const LISTEN_PORT = 80;
+const DEFAULT_IFACE = process.env.DEFAULT_IFACE || 'uap0';
+const DEFAULT_SSID = process.env.DEFAULT_SSID || 'test1234';
+const DEFAULT_PASS = process.env.DEFAULT_PASS || '12345678';
+const DEFAULT_HOSTNAME = process.env.DEFAULT_HOSTNAME || 'finternet.local';
 
 app.disable('x-powered-by');
 app.use((req, res, next) => {
@@ -30,35 +39,27 @@ app.use(bodyParser.json());
 
 app.post('/configure-hotspot', (_req, res) => {
 	console.log(_req.body);
-	res.send('OK!');
-	// nmcli dev wifi hotspot ifname wlp4s0 ssid test password "test1234"
-	const args = [
-		'dev',
-		'wifi',
-		'hotspot',
-		'ifname',
-		'wlan0',
-		'ssid',
-		_req.body['SSID'],
-		'password',
-		_req.body['password'],
-	];
-	// TODO should advertise with avahi to make connections easier
-	const nmcli = spawn('nmcli', args, { stdio: 'pipe' });
-	nmcli.stdout.on('data', data => {
-		console.log(`stdout: ${data}`);
+
+	createHotspot({
+		name: _req.body['SSID'],
+		password: _req.body['password'],
+		iface: DEFAULT_IFACE,
 	});
-	nmcli.stderr.on('data', data => {
-		console.error(`stderr: ${data}`);
-	});
-	nmcli.on('close', code => {
-		console.log(`child process exited with code ${code}`);
-	});
+
+	res.redirect('/');
 });
 
 app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
+
+createHotspot({
+	name: DEFAULT_SSID,
+	password: DEFAULT_PASS,
+	iface: DEFAULT_IFACE,
+});
+
+publishLocal({ hostname: DEFAULT_HOSTNAME, iface: DEFAULT_IFACE });
 
 http
 	.createServer(app)

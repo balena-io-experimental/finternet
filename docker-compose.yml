@@ -8,4 +8,7 @@ services:
     labels:
         io.balena.features.dbus: 1
     environment:
-        DBUS_SESSION_BUS_ADDRESS: 'unix:path=/host/run/dbus/system_bus_socket'
+        DBUS_SYSTEM_BUS_ADDRESS: 'unix:path=/host/run/dbus/system_bus_socket'
+        DEFAULT_IFACE: 'wlan0'
+        DEFAULT_SSID: 'test123'
+        DEFAULT_PASS: '12345678'

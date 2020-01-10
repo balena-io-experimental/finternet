@@ -72,3 +72,13 @@ simple express server for config (with link states)
 add data, press reconfigure, handles connection
 
 multiple inputs handled with routing metrics for fallback
+
+## Data flow
+### configurator (web UI) -> actor
++ new configuration to store and apply
+
+### actor -> configurator
++ currently applied config
++ stored config
++ available interfaces
++ available networks

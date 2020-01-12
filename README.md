@@ -2,7 +2,7 @@
 An indestructible box of internet.
 
 ## Materials
-1. balenaFin 1.1
+1. balenaFin 1.1 (running balenaOS >= 2.44.0+rev1)
 
 _OPTIONAL (for mobile power):_
 1. USB cable

@@ -1,6 +1,8 @@
 import { spawn } from 'child_process';
 
-interface Hotspot {
+import { dbusInvoker } from './dbus';
+
+interface WirelessNetwork {
 	iface: string;
 	name: string;
 	password?: string;
@@ -14,10 +16,49 @@ interface Static {
 	dnsSearch?: string;
 }
 
-export const createHotspot = (hotspotDetails: Hotspot): void => {
-	// nmcli dev wifi hotspot ifname wlp4s0 ssid test password "test1234"
+// for i in $(dbus-send --print-reply --system --dest=org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager.GetDevices | awk '/Devices/{print $NF}' | sed -e 's/"//g'); do dbus-send --system --print-reply --dest=org.freedesktop.NetworkManager $i org.freedesktop.DBus.Properties.Get string:"org.freedesktop.NetworkManager.Device" string:"DeviceType"; done
+
+// NM_DEVICE_TYPE_ETHERNET = 1 a wired ethernet device
+// NM_DEVICE_TYPE_WIFI = 2 an 802.11 Wi-Fi device
+
+export const getDevices = async (): Promise<string> => {
+	return await dbusInvoker({
+		destination: 'org.freedesktop.NetworkManager',
+		path: '/org/freedesktop/NetworkManager',
+		// interface: 'org.freedesktop.NetworkManager.GetDevices',
+		method: 'GetDevices',
+	});
+};
+
+export const connectToWifi = (
+	wirelessNetworkDetails: WirelessNetwork,
+): void => {
+	// nmcli device wifi connect SSID-Name password wireless-password
 	const args = [
-		'dev',
+		'device',
+		'wifi',
+		'connect',
+		'ifname',
+		wirelessNetworkDetails.iface,
+		'ssid',
+		wirelessNetworkDetails.name,
+	];
+	if (wirelessNetworkDetails.password) {
+		args.push('password', wirelessNetworkDetails.password);
+	}
+	nmInvoker(args);
+};
+
+export const manageDevice = (device: string): void => {
+	// nmcli device set uap0 managed yes
+	const args = ['device', 'set', device, 'managed', 'yes'];
+	nmInvoker(args);
+};
+
+export const createHotspot = (hotspotDetails: WirelessNetwork): void => {
+	// nmcli device wifi hotspot ifname wlp4s0 ssid test password "test1234"
+	const args = [
+		'device',
 		'wifi',
 		'hotspot',
 		'ifname',
@@ -39,8 +80,8 @@ export const configureStatic = (staticDetails: Static): void => {
 	//   ipv4.dns-search "myDomain.org" \
 	//   ipv4.method "manual"
 	const args = [
-		'con',
-		'mod',
+		'connection',
+		'modify',
 		"'Wired Connection 1'",
 		'ipv4.addresses',
 		`${staticDetails.address}/${staticDetails.netmask}`,

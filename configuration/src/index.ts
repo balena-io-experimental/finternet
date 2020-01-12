@@ -4,7 +4,12 @@ import * as express from 'express';
 import * as http from 'http';
 import * as path from 'path';
 
-import { configureStatic, createHotspot } from './nm';
+import {
+	configureStatic,
+	connectToWifi,
+	createHotspot,
+	manageDevice,
+} from './nm';
 
 import { publishLocal } from './avahi';
 
@@ -13,6 +18,7 @@ const app = express();
 // defaults
 const LISTEN_PORT = 80;
 const DEFAULT_IFACE = process.env.DEFAULT_IFACE || 'uap0';
+const SECONDARY_IFACE = process.env.SECONDARY_IFACE || 'wlan0';
 const DEFAULT_SSID = process.env.DEFAULT_SSID || 'test1234';
 const DEFAULT_PASS = process.env.DEFAULT_PASS || '12345678';
 const DEFAULT_HOSTNAME = process.env.DEFAULT_HOSTNAME || 'finternet.local';
@@ -63,9 +69,23 @@ app.post('/configure-ethernet', (_req, res) => {
 	res.redirect('/');
 });
 
+app.post('/configure-wireless', (_req, res) => {
+	console.log(_req.body);
+
+	connectToWifi({
+		name: _req.body['SSID'],
+		password: _req.body['password'],
+		iface: SECONDARY_IFACE,
+	});
+
+	res.redirect('/');
+});
+
 app.get('/', (_req, res) => {
 	res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
+
+manageDevice(DEFAULT_IFACE);
 
 createHotspot({
 	name: DEFAULT_SSID,
@@ -74,6 +94,7 @@ createHotspot({
 });
 
 publishLocal({ hostname: DEFAULT_HOSTNAME, iface: DEFAULT_IFACE });
+publishLocal({ hostname: DEFAULT_HOSTNAME, iface: SECONDARY_IFACE });
 
 http
 	.createServer(app)

@@ -126,7 +126,7 @@ const addHostAddress = async (
 		return;
 	}
 
-	console.log(`Adding ${hostname} at address ${address} to local MDNS pool`);
+	console.log(`Adding ${hostname} at address ${address} to local mDNS pool`);
 
 	// We require a new group for each address.
 	// We don't catch errors, as our restart policy is to not restart.

@@ -25,8 +25,8 @@ export const getDevices = async (): Promise<string> => {
 	return await dbusInvoker({
 		destination: 'org.freedesktop.NetworkManager',
 		path: '/org/freedesktop/NetworkManager',
-		// interface: 'org.freedesktop.NetworkManager.GetDevices',
-		method: 'GetDevices',
+		interface: 'org.freedesktop.NetworkManager',
+		member: 'GetDevices',
 	});
 };
 
